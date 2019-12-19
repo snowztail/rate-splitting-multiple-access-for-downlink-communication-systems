@@ -17,7 +17,7 @@ function [rate] = dpc_rate(weight, bcChannel, snr, tolerance)
 %   - adjust weight for rate region
 %
 % Reference(s):
-%   - H. Viswanathan, S. Venkatesan, and H. Huang, “Downlink capacity evaluation of cellular networks with known-interference cancellation,” IEEE Journal on Selected Areas in Communications, vol. 21, no. 5, pp. 802–811, June 2003.
+%   - H. Viswanathan, S. Venkatesan, and H. Huang, "Downlink capacity evaluation of cellular networks with known-interference cancellation," IEEE Journal on Selected Areas in Communications, vol. 21, no. 5, pp. 802-811, June 2003.
 %
 % Author & Date: Yang (i@snowztail.com) - 18 Dec 19
 

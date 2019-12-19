@@ -20,5 +20,8 @@ channelRelativeAngle = (1:4) * pi / 9;
 % channel strength ratio [\gamma]
 channelRelativeStrength = 1;
 % broadcast channel gains (rx * tx * user)
-bcChannel(:, :, 2) = kron(channelRelativeStrength, exp(1j * (0:3)));
 bcChannel(:, :, 1) = ones(rx, tx);
+
+%% RSMA
+% power ratio for private message streams [\alpha]
+rsRatio = 0.2;
