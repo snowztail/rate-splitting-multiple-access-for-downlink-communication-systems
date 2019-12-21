@@ -1,4 +1,4 @@
-function [comPrecoder, priPrecoder, rate] = rs_solver(weight, bcChannel, snr, comEqualizer, priEqualizer, comWeight, priWeight)
+function [comPrecoder, priPrecoder, wsr] = rs_solver(weight, bcChannel, snr, comEqualizer, priEqualizer, comWeight, priWeight)
 % Function:
 %   - solve the optimum common and private precoders for 1-layer rate-splitting multiple access
 %
@@ -14,7 +14,7 @@ function [comPrecoder, priPrecoder, rate] = rs_solver(weight, bcChannel, snr, co
 % OutputArg(s):
 %   - comPrecoder [p_i^c] (tx * 1): optimum common precoder
 %   - priPrecoder [p_i^i] (tx * user): optimum private precoders
-%   - rate: achievable user rates
+%   - wsr: achievable weighted sum rate
 %
 % Comment(s):
 %   - for 1-layer RS on MU-MISO systems only
@@ -53,11 +53,11 @@ cvx_begin quiet
     % total user rate (common + private)
     comRate = 1 - comWmse;
     priRate = 1 - priWmse;
-    % assume common rate is with unit weight
-    rate = min(comRate) + sum(weight .* priRate);
+    % weighted sum-rate (assume common rate is with unit weight)
+    wsr = min(comRate) + sum(weight .* priRate);
 
-    % solve rate maximization problem
-    maximize rate;
+    % solve weighted sum-rate maximization problem
+    maximize wsr;
     subject to
         priPrecoder(:)' * priPrecoder(:) + comPrecoder' * comPrecoder <= snr;
 
