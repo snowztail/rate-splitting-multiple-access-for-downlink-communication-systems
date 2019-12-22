@@ -5,7 +5,7 @@ rx = 1;
 %% SNR
 snr = db2pow(20);
 %% tolerance for convergence (percentage)
-tolerance = 1e-6;
+tolerance = 1e-2;
 
 %% User
 % number of users
