@@ -12,6 +12,6 @@ for iAngle = 1:nAngles
     for iWeight = 1:nWeights
 %         [dpcRate{iAngle, iWeight}] = dpc_rate(weight(:, iWeight), bcChannel, snr, tolerance);
 %         [rsRate{iAngle, iWeight}] = rs_rate(weight(:, iWeight), bcChannel, snr, tolerance, rsRatio);
-        [mulpRate] = mulp_rate(weight(:, iWeight), bcChannel, snr, tolerance);
+        [mulpRate{iAngle, iWeight}] = mulp_rate(weight(:, iWeight), bcChannel, snr, tolerance);
     end
 end
