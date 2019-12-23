@@ -1,7 +1,27 @@
 function [rate] = rs_rate(weight, bcChannel, snr, tolerance, rsRatio)
-%RS_RATE Summary of this function goes here
-%   Detailed explanation goes here
-% MISO
+% Function:
+%   - compute the achievable user rates with rate-splitting multiple access
+%
+% InputArg(s):
+%   - weight [u] (user * 1): user weights
+%   - bcChannel [H] (rx * tx * user): broadcast channel response
+%   - snr [\rho]: signal-to-noise ratio, which equals transmit power since unit noise power assumed
+%   - tolerance [\epsilon]: tolerance ratio for convergence
+%   - rsRatio [\alpha]: power ratio for private message streams
+%
+% OutputArg(s):
+%   - rate: achievable user rates
+%
+% Comment(s):
+%   - for 1-layer RS on MU-MISO systems only
+%   - encode (user + 1) streams, require 1-layer SIC for all users
+%   - cope with any user deployment scenario (no user grouping or ordering)
+%   - maximize weighted-sum rate
+%
+% Reference(s):
+%   - Y. Mao, B. Clerckx, and V. O. Li, "Rate-splitting multiple access for downlink communication systems: bridging, generalizing, and outperforming SDMA and NOMA," EURASIP Journal on Wireless Communications and Networking, vol. 2018, no. 1, 2018.
+%
+% Author & Date: Yang (i@snowztail.com) - 23 Dec 19
 
 [rx, tx, user] = size(bcChannel);
 % reshape BC channel matrix [H] (tx * rx * user) with Ref 1

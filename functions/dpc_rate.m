@@ -14,7 +14,7 @@ function [rate] = dpc_rate(weight, bcChannel, snr, tolerance)
 % Comment(s):
 %   - one multiuser rate point at a time
 %   - encoding order depends on user weight
-%   - adjust weight for rate region
+%   - obtain rate region by varying user weights (we can also examine all possible encoding orders)
 %
 % Reference(s):
 %   - H. Viswanathan, S. Venkatesan, and H. Huang, "Downlink capacity evaluation of cellular networks with known-interference cancellation," IEEE Journal on Selected Areas in Communications, vol. 21, no. 5, pp. 802-811, June 2003.
