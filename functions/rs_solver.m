@@ -41,7 +41,7 @@ cvx_begin quiet
     % MSEs
     comMse = cvx(user, 1);
     priMse = cvx(user, 1);
-    for iUser = 1:user
+    for iUser = 1 : user
         comMse(iUser) = square_abs(comEqualizer(iUser)) * powTerm (iUser) - 2 * real(comEqualizer(iUser) * bcChannel(:, iUser)' * comPrecoder) + 1;
         priMse(iUser) = square_abs(priEqualizer(iUser)) * priPowTerm(iUser) - 2 * real(priEqualizer(iUser) * bcChannel(:, iUser)' * priPrecoder(:, iUser)) + 1;
     end

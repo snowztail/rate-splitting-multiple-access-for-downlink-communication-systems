@@ -44,7 +44,7 @@ while (~isConverged)
     mmseWeight = cell(1, user);
 
     % update MMSE equalizers and weights based on previous precoders
-    for iUser = 1:user
+    for iUser = 1 : user
         mmseEqualizer{iUser} = wmmsePrecoder(:, :, iUser)' * bcChannel(:, :, iUser)' / (bcChannel(:, :, iUser) * wmmsePrecoder(:, :, iUser) * wmmsePrecoder(:, :, iUser)' * bcChannel(:, :, iUser)' + noiseCovMat(:, :, iUser));
         % select MMSE weight to ensure WMMSE-gradient equals WSR-gradient
         mmseWeight{iUser} = weight(iUser) / mmseCovMat(:, :, iUser);
@@ -80,8 +80,8 @@ function [noiseCovMat, mmseCovMat, rate] = covariance(bcChannel, wmmsePrecoder)
     mmseCovMat = zeros(rx, rx, user);
     % user rate (1 * user)
     rate = zeros(1, user);
-    for iUser = 1:user
-        for jUser = 1:user
+    for iUser = 1 : user
+        for jUser = 1 : user
             if jUser ~= iUser
                 noiseCovMat(:, :, iUser) = noiseCovMat(:, :, iUser) + bcChannel(:, :, iUser) * wmmsePrecoder(:, :, jUser) * wmmsePrecoder(:, :, jUser)' * bcChannel(:, :, iUser)';
             end

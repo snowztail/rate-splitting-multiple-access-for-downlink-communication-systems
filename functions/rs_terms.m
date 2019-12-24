@@ -33,14 +33,14 @@ priPowTerm = sum(abs(bcChannel' * priPrecoder) .^ 2, 2) + 1;
 powTerm = abs(bcChannel' * comPrecoder) .^ 2 + priPowTerm;
 % interference power [I_i^i]
 intPowTerm = zeros(user, 1);
-for iUser = 1:user
+for iUser = 1 : user
     intPowTerm(iUser) = priPowTerm(iUser) - abs(bcChannel(:, iUser)' * priPrecoder(:, iUser)) .^ 2;
 end
 
 % optimum MMSE equalizers [g]
 comEqualizer = zeros(user, 1);
 priEqualizer = zeros(user, 1);
-for iUser = 1:user
+for iUser = 1 : user
     comEqualizer(iUser) = comPrecoder' * bcChannel(:, iUser) / powTerm(iUser);
     priEqualizer(iUser) = priPrecoder(:, iUser)' * bcChannel(:, iUser) / priPowTerm(iUser);
 end

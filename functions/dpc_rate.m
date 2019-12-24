@@ -40,10 +40,10 @@ capacity = 0;
 while (~isConverged)
     % gradient of the objective function
     gradient = zeros(rx, rx, user);
-    for iUser = 1:user
-        for iSucUser = iUser:user
+    for iUser = 1 : user
+        for iSucUser = iUser : user
             gradient(:, :, iUser) = gradient(:, :, iUser) + (weight(iSucUser) - weight(iSucUser + 1)) *...
-            (bcChannel(:, :, iUser) / (eye(tx) + sum(macChannel(:, :, 1:iSucUser) .* covMat(:, :, 1:iSucUser) .* bcChannel(:, :, 1:iSucUser), 3)) * macChannel(:, :, iUser));
+            (bcChannel(:, :, iUser) / (eye(tx) + sum(macChannel(:, :, 1 : iSucUser) .* covMat(:, :, 1 : iSucUser) .* bcChannel(:, :, 1 : iSucUser), 3)) * macChannel(:, :, iUser));
         end
     end
 
@@ -73,11 +73,11 @@ while (~isConverged)
 
     % calculate user rates
     rate = zeros(1, user);
-    for iUser = 1:user
+    for iUser = 1 : user
         if iUser == 1
-            rate(priority(iUser)) = log2(det(eye(tx) + sum(macChannel(:, :, 1:iUser) .* covMat(:, :, 1:iUser) .* bcChannel(:, :, 1:iUser), 3)));
+            rate(priority(iUser)) = log2(det(eye(tx) + sum(macChannel(:, :, 1 : iUser) .* covMat(:, :, 1 : iUser) .* bcChannel(:, :, 1 : iUser), 3)));
         else
-            rate(priority(iUser)) = log2(det(eye(tx) + sum(macChannel(:, :, 1:iUser) .* covMat(:, :, 1:iUser) .* bcChannel(:, :, 1:iUser), 3)) / det(eye(tx) + sum(macChannel(:, :, 1:iUser - 1) .* covMat(:, :, 1:iUser - 1) .* bcChannel(:, :, 1:iUser - 1), 3)));
+            rate(priority(iUser)) = log2(det(eye(tx) + sum(macChannel(:, :, 1 : iUser) .* covMat(:, :, 1 : iUser) .* bcChannel(:, :, 1 : iUser), 3)) / det(eye(tx) + sum(macChannel(:, :, 1 : iUser - 1) .* covMat(:, :, 1 : iUser - 1) .* bcChannel(:, :, 1 : iUser - 1), 3)));
         end
     end
     if (sum(rate) - capacity) / sum(rate) <= tolerance
@@ -93,16 +93,16 @@ end
 % objective function [f]
 function [objVal] = objective(ratio, covMat, usrIdx, eigVec, snr, weight, bcChannel, macChannel)
     [~, tx, user] = size(bcChannel);
-    for iUser = 1:user
+    for iUser = 1 : user
         covMat(:, :, iUser) = ratio * covMat(:, :, iUser);
     end
     % optimal user
     covMat(:, :, usrIdx) = covMat(:, :, usrIdx) + (1 - ratio) * snr * eigVec(:, usrIdx) * eigVec(:, usrIdx)';
     % objective function
     objVal = 0;
-    for iUser = 1:user
-        for iPreUser = 1:iUser
-            objVal = objVal + (weight(iPreUser) - weight(iPreUser + 1)) * log2(det(eye(tx) + sum(macChannel(:, :, 1:iPreUser) .* covMat(:, :, 1:iPreUser) .* bcChannel(:, :, 1:iPreUser), 3)));
+    for iUser = 1 : user
+        for iPreUser = 1 : iUser
+            objVal = objVal + (weight(iPreUser) - weight(iPreUser + 1)) * log2(det(eye(tx) + sum(macChannel(:, :, 1 : iPreUser) .* covMat(:, :, 1 : iPreUser) .* bcChannel(:, :, 1 : iPreUser), 3)));
         end
     end
 end
