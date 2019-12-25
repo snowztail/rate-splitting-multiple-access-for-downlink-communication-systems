@@ -18,7 +18,7 @@ function [rate] = mulp_rate(weight, bcChannel, snr, tolerance)
 %   - pair semi-orthogonal users with similar channel gains
 %
 % Reference(s):
-%   - S. S. Christensen, R. Agarwal, E. D. Carvalho, and J. M. Cioffi, "Weighted sum-rate maximization using weighted MMSE for MIMO-BC beamforming design,"”" IEEE Transactions on Wireless Communications, vol. 7, no. 12, pp. 4792–4799, Dec 2008.
+%   - S. S. Christensen, R. Agarwal, E. D. Carvalho, and J. M. Cioffi, "Weighted sum-rate maximization using weighted MMSE for MIMO-BC beamforming design," IEEE Transactions on Wireless Communications, vol. 7, no. 12, pp. 4792–4799, Dec 2008.
 %
 % Author & Date: Yang (i@snowztail.com) - 22 Dec 19
 
@@ -29,7 +29,7 @@ function [rate] = mulp_rate(weight, bcChannel, snr, tolerance)
 stackedChannel = reshape(permute(bcChannel, [1, 3, 2]), [user * rx, tx]);
 
 % initialize precoders [B] (tx * rx * user) by matched filter
-wmmsePrecoder = sqrt(snr / user) * conj(bcChannel) ./ vecnorm(bcChannel);
+wmmsePrecoder = sqrt(snr / user) * bcChannel ./ vecnorm(bcChannel);
 wmmsePrecoder = permute(wmmsePrecoder, [2, 1, 3]);
 
 % initialize noise and MSE covariance matrices
