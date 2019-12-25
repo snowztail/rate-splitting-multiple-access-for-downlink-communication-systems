@@ -27,7 +27,7 @@ function [rate] = rs_rate(weight, bcChannel, snr, tolerance, rsRatio)
 % reshape BC channel matrix [H] (tx * rx * user) with Ref 1
 bcChannel = squeeze(permute(bcChannel, [2, 1, 3]));
 
-% initialize common precoder using MRT & SVD (see Ref 2)
+% initialize common precoder using MRT & SVD (see Ref 1)
 [u, ~, ~] = svd(bcChannel);
 % largest left singular vector of channel matrix as common channel
 comChannel = u(:, 1);
