@@ -20,7 +20,9 @@ for iPerm = 1 : nPerms
     wsr = 0;
     while(~isConverged)
     % compute equalizers and weights for successive precoder optimization
-    [equalizer, weight, ~] = noma_terms(bcChannel, precoder, [1 2]);
+    [equalizer, mmseWeight, ~] = noma_terms(bcChannel, precoder, [1 2]);
+    % optimize precoders
+    [precoder, wsr] = noma_solver(weight, bcChannel, snr, equalizer, mmseWeight, [1 2])
 
     end
 end

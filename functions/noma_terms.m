@@ -1,4 +1,4 @@
-function [equalizer, weight, rate] = noma_terms(bcChannel, precoder, order)
+function [equalizer, mmseWeight, rate] = noma_terms(bcChannel, precoder, order)
 %NOMA_TERMS Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -36,8 +36,6 @@ intPowTerm(intPowTerm == 0) = NaN;
 equalizer = zeros(user);
 for iUser = 1 : user
     for iLayer = 1 : user
-        % equalizer(iUser, iLayer) = precoder(:, order(iLayer))' * bcChannel(:, iUser) / powTerm(iUser, iLayer);
-        % equalizer(iUser, iLayer) = precoder(:, order(iLayer))' * bcChannel(:, iUser) / powTerm(iUser, order(iLayer));
         equalizer(iUser, iLayer) = precoder(:, iLayer)' * bcChannel(:, iUser) / powTerm(iUser, iLayer);
     end
 end
