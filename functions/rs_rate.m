@@ -23,6 +23,7 @@ function [rate] = rs_rate(weight, bcChannel, snr, tolerance, rsRatio)
 %
 % Author & Date: Yang (i@snowztail.com) - 23 Dec 19
 
+
 [rx, tx, user] = size(bcChannel);
 % reshape BC channel matrix [H] (tx * rx * user) with Ref 1
 bcChannel = squeeze(permute(bcChannel, [2, 1, 3]));

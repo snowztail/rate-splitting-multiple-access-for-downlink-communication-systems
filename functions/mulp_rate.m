@@ -16,6 +16,7 @@ function [rate] = mulp_rate(weight, bcChannel, snr, tolerance)
 %   - choose MMSE weights to ensure the WMMSE-gradient is identical to the WSR-gradient
 %   - alternate between WMMSE precoder optimization and MMSE weight update: (equalizer, MMSE weights) | precoder -> precoder | (equalizer, MMSE weights)
 %   - pair semi-orthogonal users with similar channel gains
+%   - no SIC is needed
 %
 % Reference(s):
 %   - S. S. Christensen, R. Agarwal, E. D. Carvalho, and J. M. Cioffi, "Weighted sum-rate maximization using weighted MMSE for MIMO-BC beamforming design," IEEE Transactions on Wireless Communications, vol. 7, no. 12, pp. 4792–4799, Dec 2008.

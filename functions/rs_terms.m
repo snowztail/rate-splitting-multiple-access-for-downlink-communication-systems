@@ -7,7 +7,6 @@ function [comEqualizer, priEqualizer, comWeight, priWeight, comRate, priRate] = 
 %   - bcChannel [H] (rx * tx * user): broadcast channel response
 %   - comPrecoder [p_i^c] (tx * 1): optimum common precoder
 %   - priPrecoder [p_i^i] (tx * user): optimum private precoders
-%   - snr [\rho]: signal-to-noise ratio, which equals transmit power since unit noise power assumed
 %
 % OutputArg(s):
 %   - comEqualizer [g_i^c] (user * 1): optimum MMSE equalizers for common stream

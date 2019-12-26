@@ -12,6 +12,8 @@ function [rate] = dpc_rate(weight, bcChannel, snr, tolerance)
 %   - rate: achievable user rates
 %
 % Comment(s):
+%   - achieves the channel capacity, no power penalty
+%   - the receiver behaves as if no interference exists
 %   - one multiuser rate point at a time
 %   - encoding order depends on user weight
 %   - obtain rate region by varying user weights (we can also examine all possible encoding orders)

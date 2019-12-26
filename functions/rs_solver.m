@@ -25,7 +25,7 @@ function [comPrecoder, priPrecoder, wsr] = rs_solver(weight, bcChannel, snr, com
 %
 % Author & Date: Yang (i@snowztail.com) - 20 Dec 19
 
-% for MU-MISO channels
+
 [tx, user] = size(bcChannel);
 
 cvx_begin quiet
