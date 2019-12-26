@@ -1,10 +1,29 @@
 function [equalizer, mmseWeight, rate] = noma_terms(bcChannel, precoder, order)
-%NOMA_TERMS Summary of this function goes here
-%   Detailed explanation goes here
+% Function:
+%   - construct power terms, equalizers, MMSEs, and weights for precoder optimization
+%   - calculate achievable user rates
+%
+% InputArg(s):
+%   - bcChannel [H] (rx * tx * user): broadcast channel response
+%   - precoder [p] (tx * user): optimum precoders maximizing WSR
+%   - order [\pi] (user * 1): decoding sequence
+%
+% OutputArg(s):
+%   - equalizer [g] (user * 1): optimum MMSE equalizer
+%   - mmseWeight [u^mmse] (user * 1): optimum MMSE weights
+%   - rate [R_i] (user * 1): achievable user rates corresponding to maximum WSR
+%
+% Comment(s):
+%   - SIC stops after users decoding own layer
+%   - the rate of each layer must be achievable for those decode it (thus the minimum of all user rates on this layer)
+%
+% Reference(s):
+%   - Y. Mao, B. Clerckx, and V. O. Li, "Rate-splitting multiple access for downlink communication systems: bridging, generalizing, and outperforming SDMA and NOMA," EURASIP Journal on Wireless Communications and Networking, vol. 2018, no. 1, 2018.
+%
+% Author & Date: Yang (i@snowztail.com) - 25 Dec 19
+
 
 [~, user] = size(bcChannel);
-
-
 % receive power terms [T]
 powTerm = zeros(user);
 % interference power terms [I]

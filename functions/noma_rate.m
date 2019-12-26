@@ -1,6 +1,28 @@
 function [rate] = noma_rate(weight, bcChannel, snr, tolerance)
-%NOMA_RATE Summary of this function goes here
-%   Detailed explanation goes here
+% Function:
+%   - compute the achievable user rates for non-orthogonal multiple access with successive interference cancellation
+%
+% InputArg(s):
+%   - weight [u] (user * 1): user weights
+%   - bcChannel [H] (rx * tx * user): broadcast channel response
+%   - snr [\rho]: signal-to-noise ratio, which equals transmit power since unit noise power assumed
+%   - tolerance [\epsilon]: tolerance ratio for convergence
+%
+% OutputArg(s):
+%   - rate: achievable user rates
+%
+% Comment(s):
+%   - as a special case of RSMA
+%   - for NOMA with ordered-SIC on MU-MISO systems only
+%   - encode (user) streams, subject to error propagation
+%   - require aligned users
+%   - examine all possible user ordering for optimal performance
+%   - maximize weighted-sum rate
+%
+% Reference(s):
+%   - Y. Mao, B. Clerckx, and V. O. Li, "Rate-splitting multiple access for downlink communication systems: bridging, generalizing, and outperforming SDMA and NOMA," EURASIP Journal on Wireless Communications and Networking, vol. 2018, no. 1, 2018.
+%
+% Author & Date: Yang (i@snowztail.com) - 25 Dec 19
 
 
 [rx, tx, user] = size(bcChannel);
@@ -15,41 +37,22 @@ order = perms(1 : user);
 % number of permutations
 nPerms = size(order, 1);
 
+rate = zeros(nPerms, user);
 for iPerm = 1 : nPerms
     isConverged = false;
     wsr = 0;
     while(~isConverged)
-    % compute equalizers and weights for successive precoder optimization
-    [equalizer, mmseWeight, ~] = noma_terms(bcChannel, precoder, [1 2]);
-    % optimize precoders
-    [precoder, wsr] = noma_solver(weight, bcChannel, snr, equalizer, mmseWeight, [1 2])
-
+        % compute equalizers and weights for successive precoder optimization
+        [equalizer, mmseWeight, ~] = noma_terms(bcChannel, precoder, order(iPerm, :));
+        % optimize precoders
+        [precoder, wsr_] = noma_solver(weight, bcChannel, snr, equalizer, mmseWeight, order(iPerm, :));
+        if (wsr_ - wsr) / wsr_ <= tolerance
+            isConverged = true;
+        end
+        wsr = wsr_;
     end
+    % compute achievable user rates for the corresponding decoding order
+    [~, ~, rate(iPerm, :)] = noma_terms(bcChannel, precoder, order(iPerm, :));
 end
 
-
-
-
-
-
-
-
-
-% isConverged = false;
-% wsr = 0;
-% while (~isConverged)
-%     % compute equalizers and weights for successive precoder optimization
-%     [comEqualizer, priEqualizer, comWeight, priWeight, ~, ~] = rs_terms(bcChannel, comPrecoder, precoder);
-%     % optimize common and private precoders
-%     [comPrecoder, precoder, wsr_] = rs_solver(weight, bcChannel, snr, comEqualizer, priEqualizer, comWeight, priWeight);
-%     if (wsr_ - wsr) / wsr_ <= tolerance
-%         isConverged = true;
-%     end
-%     wsr = wsr_;
-% end
-
-% % compute common and private rates
-% [~, ~, ~, ~, comRate, priRate] = rs_terms(bcChannel, comPrecoder, precoder);
-% % allocate common rate to different users (assume all to one user; the result is columnwise)
-% rate = priRate + diag(repmat(comRate, [user, 1]));
 end
