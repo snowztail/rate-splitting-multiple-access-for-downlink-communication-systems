@@ -1,6 +1,6 @@
-function [rate] = rs_rate(weight, bcChannel, snr, tolerance, rsRatio)
+function [rate] = slrs_rate(weight, bcChannel, snr, tolerance, rsRatio)
 % Function:
-%   - compute the achievable user rates with rate-splitting multiple access
+%   - compute the achievable user rates with single-layer rate-splitting multiple access
 %
 % InputArg(s):
 %   - weight [u] (user * 1): user weights
@@ -42,7 +42,7 @@ isConverged = false;
 wsr = 0;
 while (~isConverged)
     % compute equalizers and weights for successive precoder optimization
-    [comEqualizer, priEqualizer, comWeight, priWeight, ~, ~] = rs_terms(bcChannel, comPrecoder, priPrecoder);
+    [comEqualizer, priEqualizer, comWeight, priWeight, ~, ~] = slrs_terms(bcChannel, comPrecoder, priPrecoder);
     % optimize common and private precoders
     [comPrecoder, priPrecoder, wsr_] = rs_solver(weight, bcChannel, snr, comEqualizer, priEqualizer, comWeight, priWeight);
     if (wsr_ - wsr) / wsr_ <= tolerance
@@ -52,8 +52,9 @@ while (~isConverged)
 end
 
 % compute common and private rates
-[~, ~, ~, ~, comRate, priRate] = rs_terms(bcChannel, comPrecoder, priPrecoder);
-% allocate common rate to different users (assume all to one user; the result is columnwise)
-rate = priRate + diag(repmat(comRate, [user, 1]));
+[~, ~, ~, ~, comRate, priRate] = slrs_terms(bcChannel, comPrecoder, priPrecoder);
+% allocate common rate (assume all to the user with largest rate)
+rate = priRate;
+rate(priRate == max(priRate)) = max(priRate) + comRate;
 
 end

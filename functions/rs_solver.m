@@ -1,6 +1,6 @@
 function [comPrecoder, priPrecoder, wsr] = rs_solver(weight, bcChannel, snr, comEqualizer, priEqualizer, comWeight, priWeight)
 % Function:
-%   - solve the optimum common and private precoders for 1-layer rate-splitting multiple access
+%   - solve the optimum common and private precoders for general rate-splitting multiple access
 %
 % InputArg(s):
 %   - weight [u] (user * 1): user weights
@@ -17,7 +17,7 @@ function [comPrecoder, priPrecoder, wsr] = rs_solver(weight, bcChannel, snr, com
 %   - wsr: achievable weighted sum rate
 %
 % Comment(s):
-%   - for 1-layer RS on MU-MISO systems only
+%   - for single-layer and multiple layer RS on MU-MISO systems only
 %   - assume common rate is with unit weight
 %
 % Reference(s):

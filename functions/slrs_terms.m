@@ -1,4 +1,4 @@
-function [comEqualizer, priEqualizer, comWeight, priWeight, comRate, priRate] = rs_terms(bcChannel, comPrecoder, priPrecoder)
+function [comEqualizer, priEqualizer, comWeight, priWeight, comRate, priRate] = slrs_terms(bcChannel, comPrecoder, priPrecoder)
 % Function:
 %   - construct power terms, equalizers, MMSEs, and weights for precoder optimization
 %   - calculate achievable common and private rates
@@ -14,7 +14,7 @@ function [comEqualizer, priEqualizer, comWeight, priWeight, comRate, priRate] = 
 %   - comWeight [u_i^c] (user * 1): optimum MMSE weights for common stream
 %   - priWeight [u_i^i] (user * 1): optimum MMSE weights for (self) private stream
 %   - comRate [R_c]: achievable common rate
-%   - priRate [R_i] (user * 1): user private rates
+%   - priRate [R_i] (1 * user): user private rates
 %
 % Comment(s):
 %   - for 1-layer RS on MU-MISO systems only
@@ -53,8 +53,8 @@ comWeight = 1 ./ comMmse;
 priWeight = 1 ./ priMmse;
 
 % common rate must be achievable for all users (treat private part as noise)
-comRate = min(log2(powTerm ./ priPowTerm));
-% private rate (no influence from common part)
-priRate = log2(priPowTerm ./ intPowTerm);
+comRate = min(real(log2(powTerm ./ priPowTerm)));
+% private rate (no influence from common part; transpose for a size of 1 * user)
+priRate = real(log2(priPowTerm ./ intPowTerm))';
 
 end
