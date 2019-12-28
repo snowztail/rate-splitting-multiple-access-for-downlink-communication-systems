@@ -77,9 +77,9 @@ while (~isConverged)
     rate = zeros(1, user);
     for iUser = 1 : user
         if iUser == 1
-            rate(priority(iUser)) = log2(det(eye(tx) + sum(macChannel(:, :, 1 : iUser) .* covMat(:, :, 1 : iUser) .* bcChannel(:, :, 1 : iUser), 3)));
+            rate(priority(iUser)) = real(log2(det(eye(tx) + sum(macChannel(:, :, 1 : iUser) .* covMat(:, :, 1 : iUser) .* bcChannel(:, :, 1 : iUser), 3))));
         else
-            rate(priority(iUser)) = log2(det(eye(tx) + sum(macChannel(:, :, 1 : iUser) .* covMat(:, :, 1 : iUser) .* bcChannel(:, :, 1 : iUser), 3)) / det(eye(tx) + sum(macChannel(:, :, 1 : iUser - 1) .* covMat(:, :, 1 : iUser - 1) .* bcChannel(:, :, 1 : iUser - 1), 3)));
+            rate(priority(iUser)) = real(log2(det(eye(tx) + sum(macChannel(:, :, 1 : iUser) .* covMat(:, :, 1 : iUser) .* bcChannel(:, :, 1 : iUser), 3)) / det(eye(tx) + sum(macChannel(:, :, 1 : iUser - 1) .* covMat(:, :, 1 : iUser - 1) .* bcChannel(:, :, 1 : iUser - 1), 3))));
         end
     end
     if (sum(rate) - capacity) / sum(rate) <= tolerance
