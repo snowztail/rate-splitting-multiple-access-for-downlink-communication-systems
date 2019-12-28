@@ -28,8 +28,10 @@ function [comEqualizer, priEqualizer, comWeight, priWeight, comRate, priRate] = 
 [~, user] = size(bcChannel);
 % private stream power [T_i^i, I_i^c]
 priPowTerm = sum(abs(bcChannel' * priPrecoder) .^ 2, 2) + 1;
+% common stream power (1 layer)
+comPowTerm = abs(bcChannel' * comPrecoder) .^ 2;
 % total receive power [T_i^c] (common + private)
-powTerm = abs(bcChannel' * comPrecoder) .^ 2 + priPowTerm;
+powTerm = comPowTerm + priPowTerm;
 % interference power [I_i^i]
 intPowTerm = zeros(user, 1);
 for iUser = 1 : user

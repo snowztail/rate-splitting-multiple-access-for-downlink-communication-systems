@@ -33,15 +33,12 @@ intPowTerm = zeros(user);
 powTerm(:, 1) = sum(abs(bcChannel' * precoder) .^ 2, 2) + 1;
 for iUser = 1 : user
     for iLayer = 1 : user
-        if iLayer == 1
-            % interference power at the first layer
-            intPowTerm(iUser, iLayer) = powTerm(iUser, iLayer) - abs(bcChannel(:, iUser)' * precoder(:, order(iLayer))) .^ 2;
-        else
-            % remaining power at the i-th layer
+        if iLayer ~= 1
+            % remaining power at the i-th layer (i > 1)
             powTerm(iUser, iLayer) = powTerm(iUser, iLayer - 1) - abs(bcChannel(:, iUser)' * precoder(:, order(iLayer - 1))) .^ 2;
-            % interference power at the i-th layer
-            intPowTerm(iUser, iLayer) = intPowTerm(iUser, iLayer - 1) - abs(bcChannel(:, iUser)' * precoder(:, order(iLayer))) .^ 2;
         end
+        % interference power at the i-th layer
+        intPowTerm(iUser, iLayer) = powTerm(iUser, iLayer) - abs(bcChannel(:, iUser)' * precoder(:, order(iLayer))) .^ 2;
     end
 end
 

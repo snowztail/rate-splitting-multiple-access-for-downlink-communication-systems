@@ -14,7 +14,7 @@ function [rate] = noma_rate(weight, bcChannel, snr, tolerance)
 % Comment(s):
 %   - as a special case of RSMA
 %   - for NOMA with ordered-SIC on MU-MISO systems only
-%   - encode (user) streams, subject to error propagation
+%   - encode $user$ streams, subject to error propagation
 %   - require aligned users
 %   - examine all possible user ordering for optimal performance
 %   - maximize weighted-sum rate

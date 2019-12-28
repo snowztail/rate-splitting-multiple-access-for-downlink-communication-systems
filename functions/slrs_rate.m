@@ -14,7 +14,7 @@ function [rate] = slrs_rate(weight, bcChannel, snr, tolerance, rsRatio)
 %
 % Comment(s):
 %   - for 1-layer RS on MU-MISO systems only
-%   - encode (user + 1) streams, require 1-layer SIC for all users
+%   - encode $user + 1$ streams, require 1-layer SIC for all users
 %   - cope with any user deployment scenario (no user grouping or ordering)
 %   - maximize weighted-sum rate
 %
@@ -44,7 +44,7 @@ while (~isConverged)
     % compute equalizers and weights for successive precoder optimization
     [comEqualizer, priEqualizer, comWeight, priWeight, ~, ~] = slrs_terms(bcChannel, comPrecoder, priPrecoder);
     % optimize common and private precoders
-    [comPrecoder, priPrecoder, wsr_] = rs_solver(weight, bcChannel, snr, comEqualizer, priEqualizer, comWeight, priWeight);
+    [comPrecoder, priPrecoder, wsr_] = slrs_solver(weight, bcChannel, snr, comEqualizer, priEqualizer, comWeight, priWeight);
     if (wsr_ - wsr) / wsr_ <= tolerance
         isConverged = true;
     end
