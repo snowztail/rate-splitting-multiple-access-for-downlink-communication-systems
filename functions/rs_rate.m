@@ -1,6 +1,6 @@
-function [rate] = slrs_rate(weight, bcChannel, snr, tolerance, rsRatio)
+function [rate] = rs_rate(weight, bcChannel, snr, tolerance, rsRatio)
 % Function:
-%   - compute the achievable user rates with multiple layer rate-splitting multiple access
+%   - compute the achievable user rates with multiple layer ordered rate-splitting multiple access
 %
 % InputArg(s):
 %   - weight [u] (user * 1): user weights
@@ -14,14 +14,14 @@ function [rate] = slrs_rate(weight, bcChannel, snr, tolerance, rsRatio)
 %
 % Comment(s):
 %   - for multiple layer ordered RS on MU-MISO systems only
-%   - encode (user + 1) streams, require ordered SIC for all users
+%   - encode $user + 1$ streams, require ordered SIC for all users
 %   -
 %   - maximize weighted-sum rate
 %
 % Reference(s):
 %   - Y. Mao, B. Clerckx, and V. O. Li, "Rate-splitting multiple access for downlink communication systems: bridging, generalizing, and outperforming SDMA and NOMA," EURASIP Journal on Wireless Communications and Networking, vol. 2018, no. 1, 2018.
 %
-% Author & Date: Yang (i@snowztail.com) - 23 Dec 19
+% Author & Date: Yang (i@snowztail.com) - 26 Dec 19
 
 
 [rx, tx, user] = size(bcChannel);
@@ -51,7 +51,7 @@ for iPerm = 1 : nPerms
         % compute equalizers and weights for successive precoder optimization
         [comEqualizer, priEqualizer, comWeight, priWeight, ~, ~] = rs_terms(bcChannel, comPrecoder, priPrecoder, order(iPerm, :));
         % optimize common and private precoders
-        [comPrecoder, priPrecoder, wsr_] = rs_solver(weight, bcChannel, snr, comEqualizer, priEqualizer, comWeight, priWeight);
+        [comPrecoder, priPrecoder, wsr_] = rs_solver(weight, bcChannel, snr, comEqualizer, priEqualizer, comWeight, priWeight, order(iPerm, :));
         if (wsr_ - wsr) / wsr_ <= tolerance
             isConverged = true;
         end
