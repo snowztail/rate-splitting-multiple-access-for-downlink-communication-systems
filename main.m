@@ -28,24 +28,35 @@ legendString = cell(nAngles, 1);
 for iAngle = 1 : nAngles
     subplot(2, 2, iAngle);
     % DPC
-    dpcPlot = plot(dpcRate{iAngle, :});
+    dpcPlot = plot(cell2mat(dpcRate(iAngle, :)'));
     legendString{1} = sprintf('DPC');
+    hold on;
 
     % MU-LP
-    mulpPlot = plot(mulpRate{iAngle, :});
+    mulpPlot = plot(cell2mat(mulpRate(iAngle, :)'));
     legendString{2} = sprintf('MU-LP');
+    hold on;
 
     % NOMA
-    nomaIdx = convhull(nomaRate{iAngle, :});
-    nomaPlot = plot(sortrow(nomaRate{iAngle, nomaIdx}));
+    nomaIdx = convhull(cell2mat(nomaRate(iAngle, :)'));
+    nomaPlot = plot(sortrow(cell2mat(nomaRate(iAngle, nomaIdx)')));
     legendString{3} = sprintf('NOMA');
+    hold on;
 
     % Single-layer RS
-    slrsPlot = plot(slrsRate{iAngle, :});
+    slrsPlot = plot(cell2mat(slrsRate(iAngle, :)'));
     legendString{4} = sprintf('SLRS');
+    hold on;
 
     % RS
-    rsIdx = convhull(rsRate{iAngle, :});
-    rsPlot = plot(sortrow(rsRate{iAngle, rsIdx}));
+    rsIdx = convhull(cell2mat(rspRate(iAngle, :)'));
+    rsPlot = plot(sortrow(cell2mat(rsRate(iAngle, rsIdx)')));
     legendString{5} = sprintf('RS');
+    
+    hold off;
+    grid on; grid minor;
+    legend(legendString);
+    xlabel('R_1 [bps/Hz]');
+    ylabel('R_2 [bps/Hz]');
+    save([pwd '/data/data.mat']);
 end
