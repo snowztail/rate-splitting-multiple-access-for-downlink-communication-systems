@@ -2,6 +2,7 @@
 % number of transmit/receive antennas
 tx = 4;
 rx = 1;
+
 %% SNR
 snr = db2pow(20);
 %% tolerance for convergence (percentage)
@@ -25,3 +26,7 @@ bcChannel(:, :, 1) = ones(rx, tx);
 %% RSMA
 % power ratio for private message streams [\alpha]
 rsRatio = 0.2;
+
+%% Pushbullet (for notifications)
+apiKey = 'o.KLFeL1TWlJeMit7JOTmJKg7DTfsxvaXQ';
+Push = Pushbullet(apiKey);
