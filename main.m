@@ -27,34 +27,42 @@ catch
     Push.pushNote(Push.Devices, 'MATLAB Assist', 'Houston, we have a problem');
 end
 %% R-E region comparison
-figure('Name', sprintf('Achievable rate region comparison for %d-user %d-tx deployment, with \gamma = %d and SNR = %d dB', [user, rx, channelRelativeStrength, snr]));
+figure('Name', sprintf('Achievable rate region comparison for %d-user %d-tx deployment, with \\gamma = %d and SNR = %d dB', user, rx, channelRelativeStrength, pow2db(snr)));
 legendString = cell(nAngles, 1);
 for iAngle = 1 : nAngles
     subplot(2, 2, iAngle);
     % DPC
-    dpcPlot = plot(cell2mat(dpcRate(iAngle, :)'));
+    dpcInstance = cell2mat(dpcRate(iAngle, :)');
+    dpcInstance = sortrows(dpcInstance(convhull(dpcInstance), :));
+    dpcPlot = plot(dpcInstance(:, 1), dpcInstance(:, 2));
     legendString{1} = sprintf('DPC');
     hold on;
 
     % MU-LP
-    mulpPlot = plot(cell2mat(mulpRate(iAngle, :)'));
+    mulpInstance = cell2mat(mulpRate(iAngle, :)');
+    mulpInstance = sortrows(mulpInstance(convhull(mulpInstance), :));
+    mulpPlot = plot(mulpInstance(:, 1), mulpInstance(:, 2));
     legendString{2} = sprintf('MU-LP');
     hold on;
 
     % NOMA
-    nomaIdx = convhull(cell2mat(nomaRate(iAngle, :)'));
-    nomaPlot = plot(sortrow(cell2mat(nomaRate(iAngle, nomaIdx)')));
+    nomaInstance = cell2mat(nomaRate(iAngle, :)');
+    nomaInstance = sortrows(nomaInstance(convhull(nomaInstance), :));
+    nomaPlot = plot(nomaInstance(:, 1), nomaInstance(:, 2));
     legendString{3} = sprintf('NOMA');
     hold on;
 
     % Single-layer RS
-    slrsPlot = plot(cell2mat(slrsRate(iAngle, :)'));
+    slrsInstance = cell2mat(slrsRate(iAngle, :)');
+    slrsInstance = sortrows(slrsInstance(convhull(slrsInstance), :));
+    slrsPlot = plot(slrsInstance(:, 1), slrsInstance(:, 2));
     legendString{4} = sprintf('SLRS');
     hold on;
 
     % RS
-    rsIdx = convhull(cell2mat(rspRate(iAngle, :)'));
-    rsPlot = plot(sortrow(cell2mat(rsRate(iAngle, rsIdx)')));
+    rsInstance = cell2mat(rsRate(iAngle, :)');
+    rsInstance = sortrows(rsInstance(convhull(rsInstance), :));
+    rsPlot = plot(rsInstance(:, 1), rsInstance(:, 2));
     legendString{5} = sprintf('RS');
 
     hold off;
@@ -62,6 +70,6 @@ for iAngle = 1 : nAngles
     legend(legendString);
     xlabel('R_1 [bps/Hz]');
     ylabel('R_2 [bps/Hz]');
-    save([pwd '/data/data.mat']);
 end
+save([pwd '/data/data.mat']);
 Push.pushNote(Push.Devices, 'MATLAB Assist', 'Job''s done!');
