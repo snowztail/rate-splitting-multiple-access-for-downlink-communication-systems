@@ -1,4 +1,4 @@
-function [precoder, wsr] = noma_solver(weight, bcChannel, snr, equalizer, mmseWeight, order)
+function [precoder, wsr] = noma_solver(weight, bcChannel, snr, equalizer, mmseWeight)
 % Function:
 %   - solve the optimum precoder (regarding weighted-sum rate) for non-orthogonal multiple access with successive interference cancellation
 %
@@ -8,7 +8,6 @@ function [precoder, wsr] = noma_solver(weight, bcChannel, snr, equalizer, mmseWe
 %   - snr [\rho]: signal-to-noise ratio, which equals transmit power since unit noise power assumed
 %   - equalizer [g] (user * 1): optimum MMSE equalizer
 %   - mmseWeight [u^mmse] (user * 1): optimum MMSE weights
-%   - order [\pi] (user * 1): decoding sequence
 %
 % OutputArg(s):
 %   - precoder [p] (tx * user): optimum precoders maximizing WSR
@@ -16,7 +15,8 @@ function [precoder, wsr] = noma_solver(weight, bcChannel, snr, equalizer, mmseWe
 %
 % Comment(s):
 %   - row -> user, column -> stream; (i, j) entry means the j-th stream decoded by user-i (NaN if invalid)
-%   - user-i terminates decoding once reaching self stream (depends on decoding sequence)
+%   - require sorted terms based on decoding order
+%   - user-i decodes layer 1 to i (terminates decoding once reaching self stream i)
 %
 % Reference(s):
 %   - Y. Mao, B. Clerckx, and V. O. Li, "Rate-splitting multiple access for downlink communication systems: bridging, generalizing, and outperforming SDMA and NOMA," EURASIP Journal on Wireless Communications and Networking, vol. 2018, no. 1, 2018.
@@ -38,7 +38,7 @@ cvx_begin quiet
     for iUser = 1 : user
         for iLayer = 2 : user
             % remaining power at the i-th layer (write as summation for cvx implementation)
-            powTerm(iUser, iLayer) = sum_square_abs(bcChannel(:, iUser)' * precoder(:, order(iLayer : end)), 2) + 1;
+            powTerm(iUser, iLayer) = sum_square_abs(bcChannel(:, iUser)' * precoder(:, iLayer : end), 2) + 1;
         end
     end
 
@@ -70,7 +70,7 @@ cvx_begin quiet
         % CVX does not support comparison including NaN, so we remove invalid entries before minimization
         clsIdx = cvx_classify(layerRate);
         % 13 -> invalid
-        wsr = wsr + weight(order(iLayer)) * min(layerRate(clsIdx ~= 13));
+        wsr = wsr + weight(iLayer) * min(layerRate(clsIdx ~= 13));
     end
 
     % solve weighted sum-rate maximization problem

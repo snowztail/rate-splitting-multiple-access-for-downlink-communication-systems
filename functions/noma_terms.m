@@ -1,4 +1,4 @@
-function [equalizer, mmseWeight, rate] = noma_terms(bcChannel, precoder, order)
+function [equalizer, mmseWeight, rate] = noma_terms(bcChannel, precoder)
 % Function:
 %   - construct power terms, equalizers, MMSEs, and weights for precoder optimization
 %   - calculate achievable user rates
@@ -6,7 +6,6 @@ function [equalizer, mmseWeight, rate] = noma_terms(bcChannel, precoder, order)
 % InputArg(s):
 %   - bcChannel [H] (rx * tx * user): broadcast channel response
 %   - precoder [p] (tx * user): optimum precoders maximizing WSR
-%   - order [\pi] (user * 1): decoding sequence
 %
 % OutputArg(s):
 %   - equalizer [g] (user * 1): optimum MMSE equalizer
@@ -14,6 +13,8 @@ function [equalizer, mmseWeight, rate] = noma_terms(bcChannel, precoder, order)
 %   - rate [R_i] (user * 1): achievable user rates corresponding to maximum WSR
 %
 % Comment(s):
+%   - require sorted channels and precoders based on decoding order (hence sorted output)
+%   - user-i decodes layer-1 to layer-i (hence elements on and below diagonal are vaild)
 %   - SIC stops after users decoding own layer
 %   - the rate of each layer must be achievable for those decode it (thus the minimum of all user rates on this layer)
 %
@@ -35,17 +36,17 @@ for iUser = 1 : user
     for iLayer = 1 : user
         if iLayer ~= 1
             % remaining power at the i-th layer (i > 1)
-            powTerm(iUser, iLayer) = powTerm(iUser, iLayer - 1) - abs(bcChannel(:, iUser)' * precoder(:, order(iLayer - 1))) .^ 2;
+            powTerm(iUser, iLayer) = powTerm(iUser, iLayer - 1) - abs(bcChannel(:, iUser)' * precoder(:, iLayer - 1)) .^ 2;
         end
         % interference power at the i-th layer
-        intPowTerm(iUser, iLayer) = powTerm(iUser, iLayer) - abs(bcChannel(:, iUser)' * precoder(:, order(iLayer))) .^ 2;
+        intPowTerm(iUser, iLayer) = powTerm(iUser, iLayer) - abs(bcChannel(:, iUser)' * precoder(:, iLayer)) .^ 2;
     end
 end
 
 % SIC stops after users decoding own layer
-powTerm(order, :) = tril(powTerm(order, :));
+powTerm = tril(powTerm);
 powTerm(powTerm == 0) = NaN;
-intPowTerm(order, :) = tril(intPowTerm(order, :));
+intPowTerm = tril(intPowTerm);
 intPowTerm(intPowTerm == 0) = NaN;
 
 % optimum MMSE equalizers [g]

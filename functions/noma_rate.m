@@ -29,9 +29,6 @@ function [rate] = noma_rate(weight, bcChannel, snr, tolerance)
 % reshape BC channel matrix [H] (tx * rx * user) with Ref 1
 bcChannel = squeeze(permute(bcChannel, [2, 1, 3]));
 
-% initialzie precoders (tx * user)
-precoder = sqrt(snr / user) * bcChannel ./ vecnorm(bcChannel);
-
 % all possible user orders [\pi] (permutations * user)
 order = perms(1 : user);
 % number of permutations
@@ -41,18 +38,21 @@ rate = zeros(nPerms, user);
 for iPerm = 1 : nPerms
     isConverged = false;
     wsr = 0;
+    % initialzie precoders (tx * user)
+    precoder = sqrt(snr / user) * bcChannel(:, order(iPerm, :)) ./ vecnorm(bcChannel(:, order(iPerm, :)));
     while(~isConverged)
         % compute equalizers and weights for successive precoder optimization
-        [equalizer, mmseWeight, ~] = noma_terms(bcChannel, precoder, order(iPerm, :));
+        [equalizer, mmseWeight, ~] = noma_terms(bcChannel(:, order(iPerm, :)), precoder);
         % optimize precoders
-        [precoder, wsr_] = noma_solver(weight, bcChannel, snr, equalizer, mmseWeight, order(iPerm, :));
+        [precoder, wsr_] = noma_solver(weight(order(iPerm, :)), bcChannel(:, order(iPerm, :)), snr, equalizer, mmseWeight);
         if (wsr_ - wsr) / wsr_ <= tolerance
             isConverged = true;
         end
         wsr = wsr_;
     end
     % compute achievable user rates for the corresponding decoding order
-    [~, ~, rate(iPerm, :)] = noma_terms(bcChannel, precoder, order(iPerm, :));
+    [~, ~, rate_] = noma_terms(bcChannel(:, order(iPerm, :)), precoder);
+    rate(iPerm, :) = rate_(order(iPerm, :));
 end
 
 end
