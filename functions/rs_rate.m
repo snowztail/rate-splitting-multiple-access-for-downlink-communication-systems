@@ -28,16 +28,6 @@ function [rate] = rs_rate(weight, bcChannel, snr, tolerance, rsRatio)
 % reshape BC channel matrix [H] (tx * rx * user) with Ref 1
 bcChannel = squeeze(permute(bcChannel, [2, 1, 3]));
 
-% initialize common precoder using MRT & SVD (see Ref 1)
-[u, ~, ~] = svd(bcChannel);
-% largest left singular vector of channel matrix as common channel
-comChannel = u(:, 1);
-% common precoder (tx * 1)
-comPrecoder = sqrt(snr * (1 - rsRatio)) * comChannel / norm(comChannel);
-% private precoder (tx * user)
-priPrecoder = sqrt(snr * (rsRatio / user)) * bcChannel ./ vecnorm(bcChannel);
-clearvars u;
-
 % all possible user orders [\pi] (permutations * user)
 order = perms(1 : user);
 % number of permutations
@@ -47,11 +37,22 @@ rate = zeros(nPerms, user);
 for iPerm = 1 : nPerms
     isConverged = false;
     wsr = 0;
+
+    % initialize common precoder using MRT & SVD (see Ref 1)
+    [u, ~, ~] = svd(bcChannel(:, order(iPerm, :)));
+    % largest left singular vector of channel matrix as common channel
+    comChannel = u(:, 1);
+    % common precoder (tx * 1)
+    comPrecoder = sqrt(snr * (1 - rsRatio)) * comChannel / norm(comChannel);
+    % private precoder (tx * user)
+    priPrecoder = sqrt(snr * (rsRatio / user)) * bcChannel(:, order(iPerm, :)) ./ vecnorm(bcChannel(:, order(iPerm, :)));
+    clearvars u;
+
     while (~isConverged)
         % compute equalizers and weights for successive precoder optimization
-        [comEqualizer, priEqualizer, comWeight, priWeight, ~, ~] = rs_terms(bcChannel, comPrecoder, priPrecoder, order(iPerm, :));
+        [comEqualizer, priEqualizer, comWeight, priWeight, ~, ~] = rs_terms(bcChannel(:, order(iPerm, :)), comPrecoder, priPrecoder);
         % optimize common and private precoders
-        [comPrecoder, priPrecoder, wsr_] = rs_solver(weight, bcChannel, snr, comEqualizer, priEqualizer, comWeight, priWeight, order(iPerm, :));
+        [comPrecoder, priPrecoder, wsr_] = rs_solver(weight(order(iPerm, :)), bcChannel(:, order(iPerm, :)), snr, comEqualizer, priEqualizer, comWeight, priWeight);
         if (wsr_ - wsr) / wsr_ <= tolerance
             isConverged = true;
         end
@@ -59,7 +60,7 @@ for iPerm = 1 : nPerms
     end
 
     % compute common and private rates
-    [~, ~, ~, ~, comRate, priRate] = rs_terms(bcChannel, comPrecoder, priPrecoder, order(iPerm, :));
+    [~, ~, ~, ~, comRate, priRate] = rs_terms(bcChannel(:, order(iPerm, :)), comPrecoder, priPrecoder);
     % allocate common rate (assume all to the user with largest rate)
     rate(iPerm, :) = priRate;
     rate(iPerm, priRate == max(priRate)) = max(priRate) + comRate;

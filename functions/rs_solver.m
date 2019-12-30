@@ -1,4 +1,4 @@
-function [comPrecoder, priPrecoder, wsr] = rs_solver(weight, bcChannel, snr, comEqualizer, priEqualizer, comWeight, priWeight, order)
+function [comPrecoder, priPrecoder, wsr] = rs_solver(weight, bcChannel, snr, comEqualizer, priEqualizer, comWeight, priWeight)
 % Function:
 %   - solve the optimum common and private precoders for general rate-splitting multiple access
 %
@@ -17,8 +17,9 @@ function [comPrecoder, priPrecoder, wsr] = rs_solver(weight, bcChannel, snr, com
 %   - wsr: achievable weighted sum rate
 %
 % Comment(s):
-%   - for multiple layer RS with ordered SIC on MU-MISO systems
-%   - user-i first decode the common stream, then decode the private streams until reaching self stream (depends on decoding sequence)
+%   - row -> user, column -> stream; (i, j) entry means the j-th stream decoded by user-i (NaN if invalid)
+%   - require sorted terms based on decoding order
+%   - user-i first decode the common stream, then decode the private streams 1 to i (self stream)
 %   - assume common rate is with unit weight
 %
 % Reference(s):
@@ -46,7 +47,7 @@ cvx_begin quiet
     for iUser = 1 : user
         for iLayer = 2 : user
             % remaining private power at the i-th layer (i > 1)
-            priPowTerm(iUser, iLayer) = sum_square_abs(bcChannel(:, iUser)' * priPrecoder(:, order(iLayer : end)), 2) + 1;
+            priPowTerm(iUser, iLayer) = sum_square_abs(bcChannel(:, iUser)' * priPrecoder(:, iLayer : end), 2) + 1;
         end
     end
 
@@ -88,7 +89,7 @@ cvx_begin quiet
         % CVX does not support comparison including NaN, so we remove invalid entries before minimization
         clsIdx = cvx_classify(layerRate);
         % 13 -> invalid
-        priWsr = priWsr + weight(order(iLayer)) * min(layerRate(clsIdx ~= 13));
+        priWsr = priWsr + weight(iLayer) * min(layerRate(clsIdx ~= 13));
     end
     % total weighted sum-rate
     wsr = comWsr + priWsr;
