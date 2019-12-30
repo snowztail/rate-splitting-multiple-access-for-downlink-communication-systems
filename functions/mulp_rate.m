@@ -17,6 +17,7 @@ function [rate] = mulp_rate(weight, bcChannel, snr, tolerance)
 %   - alternate between WMMSE precoder optimization and MMSE weight update: (equalizer, MMSE weights) | precoder -> precoder | (equalizer, MMSE weights)
 %   - pair semi-orthogonal users with similar channel gains
 %   - no SIC is needed
+%   - to achieve maximum WSR, the sum rate could reduce in each iteration
 %
 % Reference(s):
 %   - S. S. Christensen, R. Agarwal, E. D. Carvalho, and J. M. Cioffi, "Weighted sum-rate maximization using weighted MMSE for MIMO-BC beamforming design," IEEE Transactions on Wireless Communications, vol. 7, no. 12, pp. 4792–4799, Dec 2008.
@@ -64,7 +65,8 @@ while (~isConverged)
     % update covariance matrices
     [noiseCovMat, mmseCovMat, rate] = covariance(bcChannel, wmmsePrecoder);
 
-    if (sum(rate) - capacity) / sum(rate) <= tolerance
+    % to achieve maximum WSR, the sum rate could reduce in each iteration and we use abs here
+    if abs(sum(rate) - capacity) / sum(rate) <= tolerance
         isConverged = true;
     end
     capacity = sum(rate);
