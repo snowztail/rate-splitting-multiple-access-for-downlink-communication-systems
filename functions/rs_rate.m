@@ -15,7 +15,9 @@ function [rate] = rs_rate(weight, bcChannel, snr, tolerance, rsRatio)
 % Comment(s):
 %   - for multiple layer ordered RS on MU-MISO systems only
 %   - encode $user + 1$ streams, require ordered SIC for all users
-%   -
+%   - the order here determines both the decoding order and the sequence of stacking user channels at the transmitter (influences both common and private rates)
+%   - the common channel is aligned to user-1 who decodes one common stream and one (self) private stream, whose channel is also stacked as the first column of the channel matrix
+%   - allocate common rate to different users by changing decoding order and permutation of channel matrix
 %   - maximize weighted-sum rate
 %
 % Reference(s):
@@ -40,7 +42,7 @@ for iPerm = 1 : nPerms
 
     % initialize common precoder using MRT & SVD (see Ref 1)
     [u, ~, ~] = svd(bcChannel(:, order(iPerm, :)));
-    % largest left singular vector of channel matrix as common channel
+    % largest left singular vector of channel matrix as common channel (select first column to align the common channel to user-1)
     comChannel = u(:, 1);
     % common precoder (tx * 1)
     comPrecoder = sqrt(snr * (1 - rsRatio)) * comChannel / norm(comChannel);
@@ -61,9 +63,9 @@ for iPerm = 1 : nPerms
 
     % compute common and private rates
     [~, ~, ~, ~, comRate, priRate] = rs_terms(bcChannel(:, order(iPerm, :)), comPrecoder, priPrecoder);
-    % allocate common rate (assume all to the user with largest rate)
-    rate(iPerm, :) = priRate;
-    rate(iPerm, priRate == max(priRate)) = max(priRate) + comRate;
+    % allocate all common rate to user-1
+    rate(iPerm, order(iPerm, :)) = priRate;
+    rate(iPerm, order(iPerm, 1)) = rate(iPerm, order(iPerm, 1)) + comRate;
 end
 
 end

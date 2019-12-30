@@ -18,6 +18,8 @@ function [rate] = slrs_rate(weight, bcChannel, snr, tolerance, rsRatio)
 %   - cope with any user deployment scenario (no user grouping or ordering)
 %   - the order here determines the sequence of stacking user channels at the transmitter and only influences the common rate
 %   - user decodes common stream then self stream (no ordered-SIC)
+%   - the common channel is aligned to user-1 (whose channel is stacked as the first column of the channel matrix)
+%   - allocate common rate to different users by permutation of channel matrix
 %   - maximize weighted-sum rate
 %
 % Reference(s):
@@ -42,7 +44,7 @@ for iPerm = 1 : nPerms
 
     % initialize common precoder using MRT & SVD (see Ref 1)
     [u, ~, ~] = svd(bcChannel(:, order(iPerm, :)));
-    % largest left singular vector of channel matrix as common channel
+    % largest left singular vector of channel matrix as common channel (select first column to align the common channel to user-1)
     comChannel = u(:, 1);
     % common precoder (tx * 1)
     comPrecoder = sqrt(snr * (1 - rsRatio)) * comChannel / norm(comChannel);
@@ -63,9 +65,9 @@ for iPerm = 1 : nPerms
 
     % compute common and private rates
     [~, ~, ~, ~, comRate, priRate] = slrs_terms(bcChannel(:, order(iPerm, :)), comPrecoder, priPrecoder);
-    % allocate common rate (assume all to the user with largest rate)
-    rate(iPerm, :) = priRate;
-    rate(iPerm, priRate == max(priRate)) = max(priRate) + comRate;
+    % allocate all common rate to user-1
+    rate(iPerm, order(iPerm, :)) = priRate;
+    rate(iPerm, order(iPerm, 1)) = rate(iPerm, order(iPerm, 1)) + comRate;
 end
 
 end

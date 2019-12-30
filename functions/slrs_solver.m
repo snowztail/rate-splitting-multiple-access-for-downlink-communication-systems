@@ -19,7 +19,7 @@ function [comPrecoder, priPrecoder, wsr] = slrs_solver(weight, bcChannel, snr, c
 % Comment(s):
 %   - for single-layer RS on MU-MISO systems only
 %   - robust to error propagation
-%   - assume common rate is with unit weight
+%   - the common rate goes to user-1 since the common channel is aligned to user-1
 %
 % Reference(s):
 %   - Y. Mao, B. Clerckx, and V. O. Li, "Rate-splitting multiple access for downlink communication systems: bridging, generalizing, and outperforming SDMA and NOMA," EURASIP Journal on Wireless Communications and Networking, vol. 2018, no. 1, 2018.
@@ -54,8 +54,8 @@ cvx_begin quiet
     % total user rate (common + private)
     comRate = 1 - comWmse;
     priRate = 1 - priWmse;
-    % weighted sum-rate (assume common rate is with unit weight)
-    wsr = min(comRate) + sum(weight .* priRate);
+    % weighted sum-rate (the common rate goes to user-1 since the common channel is aligned to user-1)
+    wsr = weight(1) * min(comRate) + sum(weight .* priRate);
 
     % solve weighted sum-rate maximization problem
     maximize wsr;

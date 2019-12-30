@@ -20,7 +20,7 @@ function [comPrecoder, priPrecoder, wsr] = rs_solver(weight, bcChannel, snr, com
 %   - row -> user, column -> stream; (i, j) entry means the j-th stream decoded by user-i (NaN if invalid)
 %   - require sorted terms based on decoding order
 %   - user-i first decode the common stream, then decode the private streams 1 to i (self stream)
-%   - assume common rate is with unit weight
+%   - the common rate goes to user-1 since the common channel is aligned to user-1
 %
 % Reference(s):
 %   - Y. Mao, B. Clerckx, and V. O. Li, "Rate-splitting multiple access for downlink communication systems: bridging, generalizing, and outperforming SDMA and NOMA," EURASIP Journal on Wireless Communications and Networking, vol. 2018, no. 1, 2018.
@@ -79,8 +79,8 @@ cvx_begin quiet
         end
     end
 
-    % common rate should be achievable for all users (assume with unit weight)
-    comWsr = min(comRate);
+    % common rate should be achievable for all users (goes to user-1 as the common channel is aligned to user-1)
+    comWsr = weight(1) * min(comRate);
     % weighted-sum of private rates is obtained by <1> select layer rates which can be achieved by those need to decode it (by min over valid entries) <2> find the corresponding user weight by decoding order
     priWsr = 0;
     for iLayer = 1 : user
