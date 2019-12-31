@@ -12,12 +12,12 @@ tolerance = 1e-6;
 % number of users
 user = 2;
 % weight (user * instance)
-weight(2, :) = 10 .^ ([-3, -1:0.05:1, 3]);
+weight(2, :) = 10 .^ ([-3, -1 : 0.05 : 1, 3]);
 weight(1, :) = 1;
 
 %% Channel
 % angle between the channels of user 1 and 2 [\theta]
-channelRelativeAngle = (1:4) * pi / 9;
+channelRelativeAngle = (1 : 4) * pi / 9;
 % channel strength ratio [\gamma]
 channelRelativeStrength = 1;
 % broadcast channel gains (rx * tx * user)
